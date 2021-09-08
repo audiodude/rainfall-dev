@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Rainfall - Edit site</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <meta name="google-signin-scope" content="profile email">
+  <meta name="google-signin-client_id" content="1057339998133-s3tu6kedq3m2m6q466vcnrrmnhi6njp5.apps.googleusercontent.com">
+
+  <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/css/edit.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script>
+    CSRF_TOKEN = '{{ csrf_token() }}';
+    initial_state = {{ initial_state | safe }};
+  </script>
+
+  <script>
+    function init() {
+      gapi.load('auth2', function() {
+        gapi.auth2.init();
+      });
+    }
+
+    function signOut() {
+      var auth2 = gapi.auth2.getAuthInstance();
+      auth2.signOut().then(function() {
+        $.ajax({
+          url: '/destroy',
+          method: 'POST',
+          headers: {
+           'X-CSRFToken': CSRF_TOKEN,
+          },
+          success: function() {
+            window.location.href = '/';
+          },
+        });
+      });
+    }
+  </script>
+  <script src="https://apis.google.com/js/platform.js?onload=init" async defer></script>
+
+</head>
+<body>
+  <div id="app" class="container-fluid full-height">
+    <div class="row full-height">
+      <div class="col-4">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+          <a class="navbar-brand" href="#">Rainfall</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+              <li id="new-nav" class="nav-item active">
+                <a class="nav-link" href="#new">New Song</a>
+              </li>
+              <li id="songs-nav" class="nav-item">
+                <a class="nav-link" href="#songs">Songs</a>
+              </li>
+              <li id="site-nav" class="nav-item">
+                <a class="nav-link" href="#site">Site</a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+        <div id="new" class="section">
+          <h3>New song</h3>
+          <div id="song-error-cont"></div>
+          <form id="song-form" class="mt-3">
+            <div class="form-group">
+              <label for="song-name">Name</label>
+              <input class="form-control" id="song-name" name="name"
+                     placeholder="My great song">
+            </div>
+
+            <div class="form-group">
+              <label for="song-tags">Tags</label>
+              <input class="form-control" id="song-tags" name="tags"
+                     placeholder="#tags #separated.by #spaces">
+            </div>
+
+            <div class="form-group">
+              <label for="site-header">Description</label>
+              <textarea class="form-control" rows="4" id="song-desc"
+                        name="description"
+                        placeholder="Write a description using Markdown"></textarea>
+            </div>
+
+            <div class="form-group">
+              <div class="custom-file">
+                <input type="file" class="custom-file-input" id="song"
+                       name="song">
+                <label class="custom-file-label" for="song">Choose mp3</label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <button class="btn btn-primary" type="button"
+                      @click="uploadSong();">
+                Upload song
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div id="songs" class="section" style="display: none;">
+          <h1>Edit songs</h1>
+        </div>
+
+        <div id="site" class="section" style="display: none;">
+          <form class="mt-3"
+                method="POST" action="/update">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <div class="form-group">
+              <label for="site-header">Site header</label>
+              <textarea class="form-control" rows="4" id="site-header" name="header">{{site['header']}}</textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="site-footer">Site footer</label>
+              <textarea class="form-control" rows="4" id="site-footer" name="footer">{{site['footer']}}</textarea>
+            </div>
+
+            <div class="form-group">
+              <button type="submit" class="btn btn-primary">
+                Save changes
+              </button>
+            </div>
+          </form>
+
+          <hr>
+
+          <p>
+            When you are done uploading songs and making changes, or even when
+            you've only got a few things finished but want to see how your site
+            looks, you can connect to Netlify and publish your site.
+          </p>
+          <div id="netlify-step-1"
+               v-if="!has_connected_netlify && !has_netlify_error">
+            <p>
+              When you click the button below, you will be asked to connect
+              to Netlify and grant permissions to this site, Rainfall.dev to
+              make changes to your Netlify account (just to publish the
+              site).
+            </p>
+
+            <button type="button" class="btn btn-secondary"
+                    @click="netlifyPopup()">
+              Connect to Netlify to publish site
+            </button>
+          </div>
+
+          <div id="netlify-step-2" v-if="has_connected_netlify">
+            <p>
+              You're almost done. Now that you've connected your Netlify
+              account to your Rainfall.dev account, you can publish your site
+              to Netlify. Note: this will make your site and your songs live
+              on the internet and viewable by anyone (who knows the URL).
+            </p>
+
+            <button type="button" class="btn btn-primary"
+                    @click="netlifyPublish()">
+              Publish my site
+            </button>
+          </div>
+
+          <div id="netlify-error" v-if="has_netlify_error">
+            <p style="color: red">
+              There was a problem connecting your Netlify account. You can
+              try again below.
+            </p>
+
+            <button type="button" class="btn btn-secondary"
+                    @click="netlifyPopup()">
+              Retry connecting to Netlify
+            </button>
+          </div>
+
+          <hr>
+
+          <button class="btn btn-danger" data-toggle="collapse"
+                  data-target="#dangerous" aria-expanded="false"
+                  aria-controls="dangerous">
+            Danger zone
+          </button>
+          <div id="dangerous" class="form-group collapse">
+            <div class="card card-body mt-3">
+              <p>
+                By clicking the button below, you will permanently delete your
+                site from Rainfall. Additionally, your login information will
+                be removed from the system. You are always welcome to sign up
+                again and start over.
+              </p>
+              <p>
+                If you've deployed your site to the wider internet using
+                Netlify, the deployed site will remain live.
+              </p>
+              <button class="btn btn-danger"
+                      @click="confirmDelete()">
+                Delete site
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <iframe src="{{ SITE_URL }}/preview/{{ site['site_id'] }}" width="100%" height="100%"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/js/jquery.min.js"></script>
+  <script src="/static/js/popper.min.js"></script>
+  <script src="/static/js/bootstrap.min.js"></script>
+  <script src="/static/js/edit.js"></script>
+</body>
+</html>
