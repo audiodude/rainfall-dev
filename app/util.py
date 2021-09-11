@@ -1,5 +1,8 @@
 import os
 
+from dotenv import load_dotenv
+
+load_dotenv()
 SONG_DIR = os.environ['RAINFALL_SONG_DIR']
 
 

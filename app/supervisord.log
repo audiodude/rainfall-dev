@@ -1,0 +1,151 @@
+2021-09-10 02:14:06,169 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2021-09-10 02:14:06,177 INFO supervisord started with pid 1
+2021-09-10 02:14:07,183 INFO spawned: 'nginx' with pid 11
+2021-09-10 02:14:07,189 INFO spawned: 'syslog-ng' with pid 12
+2021-09-10 02:14:07,195 INFO spawned: 'uwsgi' with pid 13
+2021-09-10 02:14:07,227 INFO exited: uwsgi (exit status 1; not expected)
+2021-09-10 02:14:08,290 INFO success: nginx entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-09-10 02:14:08,296 INFO success: syslog-ng entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-09-10 02:14:08,301 INFO spawned: 'uwsgi' with pid 17
+2021-09-10 02:14:08,324 INFO exited: uwsgi (exit status 1; not expected)
+2021-09-10 02:14:11,300 INFO spawned: 'uwsgi' with pid 18
+2021-09-10 02:14:11,316 INFO exited: uwsgi (exit status 1; not expected)
+2021-09-10 02:14:14,330 INFO spawned: 'uwsgi' with pid 19
+2021-09-10 02:14:14,350 INFO exited: uwsgi (exit status 1; not expected)
+2021-09-10 02:14:15,357 INFO gave up: uwsgi entered FATAL state, too many start retries too quickly
+2021-09-10 02:20:26,501 WARN received SIGTERM indicating exit request
+2021-09-10 02:20:26,503 INFO waiting for nginx, syslog-ng to die
+2021-09-10 02:20:27,615 INFO stopped: syslog-ng (exit status 0)
+2021-09-10 02:20:27,631 INFO stopped: nginx (exit status 0)
+2021-09-10 02:20:29,602 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2021-09-10 02:20:29,611 INFO supervisord started with pid 1
+2021-09-10 02:20:30,618 INFO spawned: 'nginx' with pid 13
+2021-09-10 02:20:30,623 INFO spawned: 'syslog-ng' with pid 14
+2021-09-10 02:20:30,629 INFO spawned: 'uwsgi' with pid 15
+2021-09-10 02:20:31,714 INFO success: nginx entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-09-10 02:20:31,718 INFO success: syslog-ng entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-09-10 02:20:31,721 INFO success: uwsgi entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-09-10 02:21:01,497 INFO exited: uwsgi (exit status 22; not expected)
+2021-09-10 02:21:02,506 INFO spawned: 'uwsgi' with pid 22
+2021-09-10 02:21:03,562 INFO success: uwsgi entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-09-10 02:21:33,243 INFO exited: uwsgi (exit status 22; not expected)
+2021-09-10 02:21:34,253 INFO spawned: 'uwsgi' with pid 26
+2021-09-10 02:21:35,322 INFO success: uwsgi entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-09-10 02:22:04,956 INFO exited: uwsgi (exit status 22; not expected)
+2021-09-10 02:22:05,967 INFO spawned: 'uwsgi' with pid 30
+2021-09-10 02:22:07,039 INFO success: uwsgi entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-09-10 02:22:36,697 INFO exited: uwsgi (exit status 22; not expected)
+2021-09-10 02:22:37,708 INFO spawned: 'uwsgi' with pid 34
+2021-09-10 02:22:38,766 INFO success: uwsgi entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-09-10 02:23:08,542 INFO exited: uwsgi (exit status 22; not expected)
+2021-09-10 02:23:09,552 INFO spawned: 'uwsgi' with pid 38
+2021-09-10 02:23:10,646 INFO success: uwsgi entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-09-10 02:23:40,409 INFO exited: uwsgi (exit status 22; not expected)
+2021-09-10 02:23:41,417 INFO spawned: 'uwsgi' with pid 42
+2021-09-10 02:23:42,878 INFO success: uwsgi entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-09-10 02:23:43,841 WARN received SIGTERM indicating exit request
+2021-09-10 02:23:43,843 INFO waiting for nginx, syslog-ng, uwsgi to die
+2021-09-10 02:23:46,855 INFO waiting for nginx, syslog-ng, uwsgi to die
+2021-09-10 02:23:47,870 INFO stopped: uwsgi (exit status 0)
+2021-09-10 02:23:47,994 INFO stopped: syslog-ng (exit status 0)
+2021-09-10 02:23:48,015 INFO stopped: nginx (exit status 0)
+2021-09-10 02:23:49,687 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2021-09-10 02:23:49,696 INFO supervisord started with pid 1
+2021-09-10 02:23:50,705 INFO spawned: 'nginx' with pid 10
+2021-09-10 02:23:50,745 INFO spawned: 'syslog-ng' with pid 12
+2021-09-10 02:23:50,748 INFO spawned: 'uwsgi' with pid 13
+2021-09-10 02:23:52,234 INFO success: nginx entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-09-10 02:23:52,236 INFO success: syslog-ng entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-09-10 02:23:52,240 INFO success: uwsgi entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-09-10 02:26:49,949 WARN received SIGTERM indicating exit request
+2021-09-10 02:26:49,951 INFO waiting for nginx, syslog-ng, uwsgi to die
+2021-09-10 02:26:52,957 INFO waiting for nginx, syslog-ng, uwsgi to die
+2021-09-10 02:26:53,968 INFO stopped: uwsgi (exit status 0)
+2021-09-10 02:26:54,083 INFO stopped: syslog-ng (exit status 0)
+2021-09-10 02:26:54,102 INFO stopped: nginx (exit status 0)
+2021-09-10 02:26:55,793 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2021-09-10 02:26:55,803 INFO supervisord started with pid 1
+2021-09-10 02:26:56,809 INFO spawned: 'nginx' with pid 10
+2021-09-10 02:26:56,813 INFO spawned: 'syslog-ng' with pid 11
+2021-09-10 02:26:56,824 INFO spawned: 'uwsgi' with pid 12
+2021-09-10 02:26:57,381 INFO exited: uwsgi (exit status 22; not expected)
+2021-09-10 02:26:58,387 INFO success: nginx entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-09-10 02:26:58,390 INFO success: syslog-ng entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-09-10 02:26:58,396 INFO spawned: 'uwsgi' with pid 17
+2021-09-10 02:26:58,871 INFO exited: uwsgi (exit status 22; not expected)
+2021-09-10 02:27:00,882 INFO spawned: 'uwsgi' with pid 19
+2021-09-10 02:27:01,484 INFO exited: uwsgi (exit status 22; not expected)
+2021-09-10 02:27:04,499 INFO spawned: 'uwsgi' with pid 21
+2021-09-10 02:27:04,932 INFO exited: uwsgi (exit status 22; not expected)
+2021-09-10 02:27:05,935 INFO gave up: uwsgi entered FATAL state, too many start retries too quickly
+2021-09-10 02:27:16,019 WARN received SIGTERM indicating exit request
+2021-09-10 02:27:16,021 INFO waiting for nginx, syslog-ng to die
+2021-09-10 02:27:17,127 INFO stopped: syslog-ng (exit status 0)
+2021-09-10 02:27:17,139 INFO stopped: nginx (exit status 0)
+2021-09-10 02:27:18,841 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2021-09-10 02:27:18,849 INFO supervisord started with pid 1
+2021-09-10 02:27:19,856 INFO spawned: 'nginx' with pid 10
+2021-09-10 02:27:19,861 INFO spawned: 'syslog-ng' with pid 11
+2021-09-10 02:27:19,873 INFO spawned: 'uwsgi' with pid 12
+2021-09-10 02:27:21,430 INFO success: nginx entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-09-10 02:27:21,434 INFO success: syslog-ng entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-09-10 02:27:21,438 INFO success: uwsgi entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-09-10 02:29:59,106 WARN received SIGTERM indicating exit request
+2021-09-10 02:29:59,109 INFO waiting for nginx, syslog-ng, uwsgi to die
+2021-09-10 02:30:02,118 INFO waiting for nginx, syslog-ng, uwsgi to die
+2021-09-10 02:30:03,128 INFO stopped: uwsgi (exit status 0)
+2021-09-10 02:30:03,243 INFO stopped: syslog-ng (exit status 0)
+2021-09-10 02:30:03,259 INFO stopped: nginx (exit status 0)
+2021-09-10 02:30:04,793 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2021-09-10 02:30:04,801 INFO supervisord started with pid 1
+2021-09-10 02:30:05,807 INFO spawned: 'nginx' with pid 10
+2021-09-10 02:30:05,814 INFO spawned: 'syslog-ng' with pid 11
+2021-09-10 02:30:05,820 INFO spawned: 'uwsgi' with pid 12
+2021-09-10 02:30:07,303 INFO success: nginx entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-09-10 02:30:07,307 INFO success: syslog-ng entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-09-10 02:30:07,310 INFO success: uwsgi entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-09-10 02:31:12,564 WARN received SIGTERM indicating exit request
+2021-09-10 02:31:12,568 INFO waiting for nginx, syslog-ng, uwsgi to die
+2021-09-10 02:31:15,575 INFO waiting for nginx, syslog-ng, uwsgi to die
+2021-09-10 02:31:16,592 INFO stopped: uwsgi (exit status 0)
+2021-09-10 02:31:16,702 INFO stopped: syslog-ng (exit status 0)
+2021-09-10 02:31:16,716 INFO stopped: nginx (exit status 0)
+2021-09-10 02:31:18,337 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2021-09-10 02:31:18,344 INFO supervisord started with pid 1
+2021-09-10 02:31:19,351 INFO spawned: 'nginx' with pid 12
+2021-09-10 02:31:19,356 INFO spawned: 'syslog-ng' with pid 13
+2021-09-10 02:31:19,363 INFO spawned: 'uwsgi' with pid 14
+2021-09-10 02:31:20,958 INFO success: nginx entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-09-10 02:31:20,963 INFO success: syslog-ng entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-09-10 02:31:20,965 INFO success: uwsgi entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-09-10 04:52:36,576 WARN received SIGTERM indicating exit request
+2021-09-10 04:52:36,579 INFO waiting for nginx, syslog-ng, uwsgi to die
+2021-09-10 04:52:39,590 INFO waiting for nginx, syslog-ng, uwsgi to die
+2021-09-10 04:52:40,624 INFO stopped: uwsgi (exit status 0)
+2021-09-10 04:52:40,738 INFO stopped: syslog-ng (exit status 0)
+2021-09-10 04:52:40,763 INFO stopped: nginx (exit status 0)
+2021-09-10 04:52:42,992 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2021-09-10 04:52:42,999 INFO supervisord started with pid 1
+2021-09-10 04:52:44,005 INFO spawned: 'nginx' with pid 11
+2021-09-10 04:52:44,012 INFO spawned: 'syslog-ng' with pid 12
+2021-09-10 04:52:44,020 INFO spawned: 'uwsgi' with pid 13
+2021-09-10 04:52:45,523 INFO success: nginx entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-09-10 04:52:45,526 INFO success: syslog-ng entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-09-10 04:52:45,530 INFO success: uwsgi entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-09-10 05:00:30,562 WARN received SIGTERM indicating exit request
+2021-09-10 05:00:30,563 INFO waiting for nginx, syslog-ng, uwsgi to die
+2021-09-10 05:00:33,573 INFO waiting for nginx, syslog-ng, uwsgi to die
+2021-09-10 05:00:34,584 INFO stopped: uwsgi (exit status 0)
+2021-09-10 05:00:34,698 INFO stopped: syslog-ng (exit status 0)
+2021-09-10 05:00:34,716 INFO stopped: nginx (exit status 0)
+2021-09-10 05:00:36,543 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2021-09-10 05:00:36,551 INFO supervisord started with pid 1
+2021-09-10 05:00:37,561 INFO spawned: 'nginx' with pid 10
+2021-09-10 05:00:37,570 INFO spawned: 'uwsgi' with pid 11
+2021-09-10 05:00:39,112 INFO success: nginx entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-09-10 05:00:39,114 INFO success: uwsgi entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2021-09-10 05:04:59,848 WARN received SIGTERM indicating exit request
+2021-09-10 05:04:59,850 INFO waiting for nginx, uwsgi to die
+2021-09-10 05:05:02,858 INFO waiting for nginx, uwsgi to die
+2021-09-10 05:05:03,868 INFO stopped: uwsgi (exit status 0)
+2021-09-10 05:05:03,880 INFO stopped: nginx (exit status 0)
