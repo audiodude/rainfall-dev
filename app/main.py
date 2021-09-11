@@ -37,6 +37,7 @@ rainfall_db = client.rainfall
 app = flask.Flask(__name__)
 app.config.update({
     'SESSION_TYPE': 'mongodb',
+    'SESSION_MONGODB': client,
     'SESSION_MONGODB_DB': 'rainfall',
     'SESSION_COOKIE_SECURE': False,
     'SESSION_USE_SIGNER': True,
@@ -204,6 +205,7 @@ def insert_rainfall_site(user_id, name):
 
 @app.route('/')
 def index():
+  print(flask.session.get('user_id'))
   if flask.session.get('user_id'):
     return flask.redirect('/edit')
 

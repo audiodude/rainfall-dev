@@ -4,7 +4,7 @@
 
 FROM tiangolo/uwsgi-nginx:python3.9
 RUN apt-get update \
-  && apt-get install --no-install-recommends --no-install-suggests -y syslog-ng
+  && apt-get install --no-install-recommends --no-install-suggests -y uwsgi-mongodb-plugins
 
 # URL under which static (not modified by Python) files will be requested
 # They will be served by Nginx directly, without being handled by uWSGI
@@ -26,8 +26,6 @@ ENV PYTHONPATH=/app
 # Override the base image supervisord.conf with one that specifies the uwsgi statup
 # command we want along with our logging options.
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
-COPY syslog-ng-extra.conf /etc/syslog-ng/conf.d/syslog-ng-extra.conf
 
 # Move the base entrypoint to reuse it
 RUN mv /entrypoint.sh /uwsgi-nginx-entrypoint.sh
