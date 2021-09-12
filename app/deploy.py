@@ -1,6 +1,7 @@
 import os
 import subprocess
 
+import requests
 
 def build_site(site_id):
   start_char = site_id[0]
@@ -29,3 +30,17 @@ def create_site_zip(site_id):
     ])
   except Exception as e:
     raise ValueError(e.output)
+
+
+def create_netlify_site(site_id, access_token):
+  start_char = site_id[0]
+  zip_path = '/var/data/%s/%s/site.zip' % (start_char, site_id)
+  with open(zip_path, 'rb') as f:
+    data = f.read()
+  res = requests.post(url='https://api.netlify.com/api/v1/sites',
+                      data=data,
+                      headers={
+                          'Content-Type': 'application/zip',
+                          'Authorization': 'Bearer %s' % access_token,
+                      })
+  return res.json()['id']

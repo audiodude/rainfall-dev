@@ -16,10 +16,8 @@ from flask import session
 from flask_frozen import Freezer
 from pymongo import MongoClient
 
-from util import get_song_directory
-
-client = MongoClient(connect=False)
-rainfall_db = client.rainfall
+import mongo
+from song_dir import get_song_directory
 
 site = Blueprint('site',
                  __name__,
@@ -69,7 +67,7 @@ def index():
   if g.site_id is None:
     return ('Not Found', 404)
 
-  site = rainfall_db.sites.find_one({'site_id': g.site_id})
+  site = mongo.get_rainfalldb().sites.find_one({'site_id': g.site_id})
   if site is None:
     return ('Not Found', 404)
   elif ENV == 'development' and site['user_id'] != user_id:
@@ -102,7 +100,7 @@ def file_(filename):
   if not user_id:
     (404, 'Not found')
 
-  site = rainfall_db.sites.find_one({'user_id': user_id})
+  site = mongo.get_rainfalldb().sites.find_one({'user_id': user_id})
   if not site:
     (404, 'Not found')
 
@@ -121,7 +119,7 @@ def song(slug):
   if g.site_id is None:
     return ('Not Found', 404)
 
-  site = rainfall_db.sites.find_one({'site_id': g.site_id})
+  site = mongo.get_rainfalldb().sites.find_one({'site_id': g.site_id})
   if site is None:
     return ('Not Found', 404)
 

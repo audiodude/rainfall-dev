@@ -1,8 +1,8 @@
-from datetime import timedelta, datetime
+from app.commands import register_preview_blueprint
+from datetime import timedelta
 import json
 import os
 import re
-import subprocess
 import time
 
 from dotenv import load_dotenv
@@ -14,10 +14,10 @@ from google.auth.transport import requests as googrequests
 import pymongo
 from werkzeug.utils import secure_filename
 
+import bootstrap
 from commands import insert_rainfall_site, delete_mongo_record
 from deploy import build_site, create_netlify_site, create_site_zip
 import mongo
-from preview.site import site
 from song_dir import get_song_directory, create_song_directory, delete_song_directory
 
 load_dotenv()
@@ -42,17 +42,7 @@ app.debug = True
 
 ALLOWED_EXTENSIONS = set(['mp3'])
 
-
-def register_sites():
-  db = pymongo.MongoClient(MONGO_URI, connect=False).rainfall
-  for s in db.sites.find():
-    app.register_blueprint(site,
-                           url_prefix='/preview/%s' % s['site_id'],
-                           url_defaults={'site_id': s['site_id']})
-
-
-register_sites()
-
+bootstrap.register_sites(MONGO_URI, app)
 
 @app.route('/')
 def index():
@@ -318,6 +308,7 @@ def create():
 
   create_song_directory(name)
   insert_rainfall_site(user_id, name)
+  register_preview_blueprint(app, name)
   return flask.redirect('/edit')
 
 

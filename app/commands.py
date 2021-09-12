@@ -6,7 +6,7 @@ import time
 import flask
 
 import mongo
-
+from preview.site import site
 
 def create_venv(name):
   try:
@@ -104,3 +104,8 @@ def insert_rainfall_site(user_id, name):
       }
   },
                                upsert=True)
+
+def register_preview_blueprint(app, site_id):
+  app.register_blueprint(site,
+                           url_prefix='/preview/%s' % site_id,
+                           url_defaults={'site_id': site_id})
