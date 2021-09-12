@@ -1,14 +1,9 @@
 from datetime import timedelta, datetime
 import json
-import pip
 import os
-import pathlib
 import re
 import subprocess
-import sys
 import time
-import urllib.request
-import venv
 
 from dotenv import load_dotenv
 import flask
@@ -20,6 +15,7 @@ import pymongo
 import requests
 from werkzeug.utils import secure_filename
 
+import mongo
 from preview.site import site
 from util import get_song_directory
 
@@ -30,20 +26,16 @@ NETLIFY_CLIENT_SECRET = os.environ['RAINFALL_NETLIFY_CLIENT_SECRET']
 SITE_URL = os.environ['RAINFALL_SITE_URL']
 MONGO_URI = os.environ['RAINFALL_MONGO_URI']
 
-client = pymongo.MongoClient(MONGO_URI, connect=False)
-emperor_db = client.emperor
-rainfall_db = client.rainfall
-
 app = flask.Flask(__name__)
 app.config.update({
     'SESSION_TYPE': 'mongodb',
-    'SESSION_MONGODB': client,
-    'SESSION_MONGODB_DB': 'rainfall',
+    'SESSION_MONGODB': pymongo.MongoClient(MONGO_URI, connect=False),
     'SESSION_COOKIE_SECURE': False,
     'SESSION_USE_SIGNER': True,
     'SECRET_KEY': os.environ['FLASK_SECRET'],
     'PERMANENT_SESSION_LIFETIME': timedelta(days=90),
 })
+Session(app)
 csrf = CSRFProtect(app)
 app.debug = True
 
@@ -51,7 +43,8 @@ ALLOWED_EXTENSIONS = set(['mp3'])
 
 
 def register_sites():
-  for s in rainfall_db.sites.find():
+  db = pymongo.MongoClient(MONGO_URI, connect=False).rainfall
+  for s in db.sites.find():
     app.register_blueprint(site,
                            url_prefix='/preview/%s' % s['site_id'],
                            url_defaults={'site_id': s['site_id']})
@@ -166,11 +159,11 @@ env = CHECK_REFERER=1
           1
   }
 
-  emperor_db.vassals.insert_one(mongo_config)
+  mongo.get_emperordb().vassals.insert_one(mongo_config)
 
 
 def delete_mongo_record(name):
-  emperor_db.vassals.delete_one({'name': '%s.ini' % name})
+  mongo.get_emperordb().vassals.delete_one({'name': '%s.ini' % name})
 
 
 def update_nginx(name):
@@ -192,7 +185,7 @@ def update_nginx(name):
 
 def insert_rainfall_site(user_id, name):
   year_text = datetime.now().year
-  rainfall_db.sites.update_one({'user_id': user_id}, {
+  mongo.get_rainfalldb().sites.update_one({'user_id': user_id}, {
       '$set': {
           'user_id': user_id,
           'site_id': name,
@@ -205,7 +198,6 @@ def insert_rainfall_site(user_id, name):
 
 @app.route('/')
 def index():
-  print(flask.session.get('user_id'))
   if flask.session.get('user_id'):
     return flask.redirect('/edit')
 
@@ -223,7 +215,7 @@ def capture_token():
   if user_id:
     access_token = flask.request.args.get('access_token')
     if access_token:
-      rainfall_db.users.update_one(
+      mongo.get_rainfalldb().users.update_one(
           {'user_id': user_id},
           {'$set': {
               'netlify_access_token': access_token,
@@ -239,7 +231,7 @@ def has_netlify():
   if not user_id:
     return flask.jsonify({'has_netlify': False})
 
-  user = rainfall_db.users.find_one({'user_id': user_id})
+  user = mongo.get_rainfalldb().users.find_one({'user_id': user_id})
   if not user:
     return flask.jsonify({'has_netlify': False})
 
@@ -262,7 +254,7 @@ def tokensignin():
 
     user_id = idinfo['sub']
 
-    rainfall_db.users.update_one({'user_id': user_id}, {
+    mongo.get_rainfalldb().users.update_one({'user_id': user_id}, {
         '$set': {
             'user_id': user_id,
             'email': idinfo['email'],
@@ -291,10 +283,10 @@ def edit():
   if not user_id:
     return flask.redirect('/')
 
-  user = rainfall_db.users.find_one({'user_id': user_id})
+  user = mongo.get_rainfalldb().users.find_one({'user_id': user_id})
   netlify_token = user and user.get('netlify_access_token')
 
-  site = rainfall_db.sites.find_one({'user_id': user_id})
+  site = mongo.get_rainfalldb().sites.find_one({'user_id': user_id})
   if not site:
     return flask.redirect('/new')
 
@@ -315,12 +307,12 @@ def publish():
   if not user_id:
     return ('Not Authorized', 403)
 
-  user = rainfall_db.users.find_one({'user_id': user_id})
+  user = mongo.get_rainfalldb().users.find_one({'user_id': user_id})
   netlify_token = user and user.get('netlify_access_token')
   if not netlify_token:
     return ('Bad Request', 400)
 
-  site = rainfall_db.sites.find_one({'user_id': user_id})
+  site = mongo.get_rainfalldb().sites.find_one({'user_id': user_id})
   if not site:
     return ('Bad Request', 400)
 
@@ -328,7 +320,7 @@ def publish():
   create_site_zip(site['site_id'])
   netlify_site_id = create_netlify_site(site['site_id'], netlify_token)
 
-  rainfall_db.users.update_one({'user_id': user_id},
+  mongo.get_rainfalldb().users.update_one({'user_id': user_id},
                                {'$set': {
                                    'netlify_site_id': netlify_site_id,
                                }},
@@ -343,7 +335,7 @@ def update():
   if not user_id:
     return flask.redirect('/')
 
-  site = rainfall_db.sites.find_one({'user_id': user_id})
+  site = mongo.get_rainfalldb().sites.find_one({'user_id': user_id})
   if not site:
     return flask.redirect('/new')
 
@@ -351,7 +343,7 @@ def update():
   footer = flask.request.form.get('footer')
 
   if header is not None or footer is not None:
-    rainfall_db.sites.update({
+    mongo.get_rainfalldb().sites.update({
         'site_id': site['site_id'],
     }, {'$set': {
         'header': header,
@@ -395,7 +387,7 @@ def upload():
   if not user_id:
     return ('Not Authorized', 403)
 
-  site = rainfall_db.sites.find_one({'user_id': user_id})
+  site = mongo.get_rainfalldb().sites.find_one({'user_id': user_id})
   if not site:
     return ('No site', 404)
 
@@ -423,7 +415,7 @@ def upload():
       'date_created': time.time(),
   }
 
-  rainfall_db.sites.update({
+  mongo.get_rainfalldb().sites.update({
       'site_id': site['site_id'],
   }, {
       '$addToSet': {
@@ -440,11 +432,11 @@ def new():
   if not user_id:
     return flask.redirect('/')
 
-  user = rainfall_db.users.find_one({'user_id': user_id})
+  user = mongo.get_rainfalldb().users.find_one({'user_id': user_id})
   if not user:
     return flask.redirect('/')
 
-  site = rainfall_db.sites.find_one({'user_id': user_id})
+  site = mongo.get_rainfalldb().sites.find_one({'user_id': user_id})
   if site:
     return flask.redirect('/edit')
 
@@ -463,7 +455,7 @@ def create():
   if not user_id:
     return flask.redirect('/')
 
-  user = rainfall_db.users.find_one({'user_id': user_id})
+  user = mongo.get_rainfalldb().users.find_one({'user_id': user_id})
   if not user:
     return flask.redirect('/')
 
@@ -485,7 +477,7 @@ def destroy():
   if not user_id:
     return ('Bad Request', 400)
 
-  user = rainfall_db.users.find_one({'user_id': user_id})
+  user = mongo.get_rainfalldb().users.find_one({'user_id': user_id})
   if not user:
     return ('Bad Request', 400)
 
@@ -495,10 +487,10 @@ def destroy():
   delete_song_directory(name)
   delete_mongo_record(name)
 
-  result = rainfall_db.sites.delete_one({'user_id': user_id})
+  result = mongo.get_rainfalldb().sites.delete_one({'user_id': user_id})
   if result.deleted_count < 1:
     raise Exception(user_id)
-  result = rainfall_db.users.delete_one({'user_id': user_id})
+  result = mongo.get_rainfalldb().users.delete_one({'user_id': user_id})
   if result.deleted_count < 1:
     raise Exception(user_id)
 
