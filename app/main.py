@@ -12,12 +12,13 @@ from flask_wtf.csrf import CSRFProtect
 from google.oauth2 import id_token
 from google.auth.transport import requests as googrequests
 import pymongo
-import requests
 from werkzeug.utils import secure_filename
 
+from commands import insert_rainfall_site, delete_mongo_record
+from deploy import build_site, create_netlify_site, create_site_zip
 import mongo
 from preview.site import site
-from util import get_song_directory
+from song_dir import get_song_directory, create_song_directory, delete_song_directory
 
 load_dotenv()
 GOOGLE_CLIENT_ID = os.environ['RAINFALL_CLIENT_ID']
@@ -51,149 +52,6 @@ def register_sites():
 
 
 register_sites()
-
-
-def clone_repo(name):
-  start_char = name[0]
-  subprocess.check_call([
-      'sudo',
-      '-u',
-      'www-data',
-      'mkdir',
-      '-p',
-      '/var/data/%s' % start_char,
-  ])
-  path = '/var/data/%s/%s/' % (start_char, name)
-  subprocess.check_call([
-      'sudo',
-      '-u',
-      'www-data',
-      'git',
-      'clone',
-      'https://github.com/audiodude/rainfall-template.git',
-      path,
-  ])
-  return True
-
-
-def create_venv(name):
-  try:
-    output = subprocess.check_output([
-        'sudo', '-u', 'www-data', '/usr/bin/python3',
-        '/home/tmoney/code/rainfall-frontend/create_venv.py', name
-    ],
-                                     stderr=subprocess.STDOUT)
-  except Exception as e:
-    raise ValueError(e.output)
-  return True
-
-
-def build_site(site_id):
-  start_char = site_id[0]
-  base_path = '/var/data/%s/%s' % (start_char, site_id)
-  try:
-    subprocess.check_call([
-        'sudo', '-u', 'www-data',
-        'RAINFALL_SITE_ID=%s' % site_id,
-        '%s/venv/bin/python3' % base_path,
-        '%s/sitebuilder.py' % base_path, 'build'
-    ],
-                          stderr=subprocess.STDOUT)
-  except Exception as e:
-    raise ValueError(e.output)
-
-
-def create_site_zip(site_id):
-  start_char = site_id[0]
-  base_path = '/var/data/%s/%s' % (start_char, site_id)
-  zip_path = '%s/site.zip' % base_path
-  if os.path.isfile(zip_path):
-    os.unlink(zip_path)
-  try:
-    subprocess.check_call([
-        'sudo', '-u', 'www-data', 'zip', zip_path, '-r',
-        '%s/build' % base_path
-    ])
-  except Exception as e:
-    raise ValueError(e.output)
-
-
-def create_netlify_site(site_id, access_token):
-  start_char = site_id[0]
-  zip_path = '/var/data/%s/%s/site.zip' % (start_char, site_id)
-  with open(zip_path, 'rb') as f:
-    data = f.read()
-  res = requests.post(url='https://api.netlify.com/api/v1/sites',
-                      data=data,
-                      headers={
-                          'Content-Type': 'application/zip',
-                          'Authorization': 'Bearer %s' % access_token,
-                      })
-  return res.json()['id']
-
-
-def insert_mongo_record(name):
-  start_char = name[0]
-  mongo_config = {
-      "name":
-          "%s.ini" % name,
-      "config":
-          '''[uwsgi]
-virtualenv = /var/data/%(start_char)s/%(name)s/venv
-uid = www-data
-gid = www-data
-wsgi-file = /var/data/%(start_char)s/%(name)s/sitebuilder.py
-plugin = python
-callable = app
-env = RAINFALL_SITE_ID=%(name)s
-env = CHECK_REFERER=1
-''' % {
-              'start_char': start_char,
-              'name': name
-          },
-      "ts":
-          time.gmtime(),
-      "socket":
-          "/var/run/uwsgi/%s.socket" % name,
-      "enabled":
-          1
-  }
-
-  mongo.get_emperordb().vassals.insert_one(mongo_config)
-
-
-def delete_mongo_record(name):
-  mongo.get_emperordb().vassals.delete_one({'name': '%s.ini' % name})
-
-
-def update_nginx(name):
-  config = flask.render_template('nginx.txt', name=name)
-  config_path = '/etc/nginx/sites-available/%s' % name
-  enabled_path = '/etc/nginx/sites-enabled/%s' % name
-  with open(config_path, 'w') as f:
-    f.write(config)
-
-  if os.path.isfile(enabled_path):
-    os.unlink(enabled_path)
-  os.symlink(config_path, enabled_path)
-  try:
-    subprocess.check_output(['sudo', 'service', 'nginx', 'reload'],
-                            stderr=subprocess.STDOUT)
-  except Exception as e:
-    raise ValueError(e.output)
-
-
-def insert_rainfall_site(user_id, name):
-  year_text = datetime.now().year
-  mongo.get_rainfalldb().sites.update_one({'user_id': user_id}, {
-      '$set': {
-          'user_id': user_id,
-          'site_id': name,
-          'header': 'Songs and Sounds by [Rainfall](https://rainfall.dev)',
-          'footer': 'Copyright %s, All Rights Reserved' % year_text,
-      }
-  },
-                               upsert=True)
 
 
 @app.route('/')
@@ -356,14 +214,6 @@ def update():
 def allowed_file(filename):
   return '.' in filename and \
          filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-
-def create_song_directory(site_id):
-  subprocess.check_call(['mkdir', '-p', get_song_directory(site_id)])
-
-
-def delete_song_directory(site_id):
-  subprocess.check_call(['rm', '-rf', get_song_directory(site_id)])
 
 
 def get_slug(filename):

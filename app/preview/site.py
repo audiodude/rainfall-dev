@@ -2,7 +2,6 @@ from collections import defaultdict
 from datetime import datetime
 import markdown
 import random
-import sys
 import os
 
 from flask import Blueprint
@@ -10,6 +9,7 @@ from flask import Flask
 from flask import Markup
 from flask import g
 from flask import render_template
+from flask import redirect
 from flask import request
 from flask import send_from_directory
 from flask import session
@@ -55,7 +55,7 @@ def _add_color(song, i):
 
 
 @site.url_value_preprocessor
-def pull_lang_code(endpoint, values):
+def pull_site_id(endpoint, values):
   g.site_id = values.pop('site_id', None)
 
 
@@ -127,7 +127,7 @@ def song(slug):
 
   songs = site.get('songs', [])
   if not songs:
-    return flask.redirect('/')
+    return redirect('/')
 
   for song in songs:
     if song['slug'] == slug:
