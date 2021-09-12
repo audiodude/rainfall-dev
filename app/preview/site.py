@@ -4,22 +4,12 @@ import markdown
 import random
 import os
 
-from flask import Blueprint
-from flask import Flask
-from flask import Markup
-from flask import g
-from flask import render_template
-from flask import redirect
-from flask import request
-from flask import send_from_directory
-from flask import session
-from flask_frozen import Freezer
-from pymongo import MongoClient
+import flask
 
 import mongo
 from song_dir import get_song_directory
 
-site = Blueprint('site',
+site = flask.Blueprint('site',
                  __name__,
                  template_folder='templates',
                  static_folder='static')
@@ -54,13 +44,13 @@ def _add_color(song, i):
 
 @site.url_value_preprocessor
 def pull_site_id(endpoint, values):
-  g.site_id = values.pop('site_id', None)
+  flask.g.site_id = values.pop('site_id', None)
 
 
 @site.route('/')
 def index():
   if ENV == 'development':
-    user_id = session.get('user_id')
+    user_id = flask.session.get('user_id')
     if not user_id:
       return ('Not Authorized', 403)
 
@@ -84,10 +74,10 @@ def index():
   for i, song in enumerate(sorted_songs):
     _add_color(song, i)
 
-  header = Markup(markdown.markdown(site['header']))
-  footer = Markup(markdown.markdown(site['footer']))
+  header = flask.Markup(markdown.markdown(site['header']))
+  footer = flask.Markup(markdown.markdown(site['footer']))
 
-  return render_template('site/index.html',
+  return flask.render_template('site/index.html',
                          songs=sorted_songs,
                          header=header,
                          footer=footer)
@@ -96,7 +86,7 @@ def index():
 @site.route('/file/<filename>')
 def file_(filename):
   # Use the user id from the session, not from the URL which could be spoofed.
-  user_id = session.get('user_id')
+  user_id = flask.session.get('user_id')
   if not user_id:
     (404, 'Not found')
 
@@ -105,7 +95,7 @@ def file_(filename):
     (404, 'Not found')
 
   if site:
-    return send_from_directory(get_song_directory(site['site_id']), filename)
+    return flask.send_from_directory(get_song_directory(site['site_id']), filename)
 
 
 @site.route('/<slug>/')
@@ -113,7 +103,7 @@ def song(slug):
   related = defaultdict(list)
 
   if (os.environ.get('CHECK_REFERER') and
-      'rainfall.dev' not in request.headers.get("Referer")):
+      'rainfall.dev' not in flask.request.headers.get("Referer")):
     return ('Not Authorized', 403)
 
   if g.site_id is None:
@@ -125,7 +115,7 @@ def song(slug):
 
   songs = site.get('songs', [])
   if not songs:
-    return redirect('/')
+    return flask.redirect('/')
 
   for song in songs:
     if song['slug'] == slug:
@@ -133,7 +123,7 @@ def song(slug):
 
   _annotate(song, random.randrange(0, len(song_colors)))
 
-  faq = Markup(markdown.markdown(site.get('faq', '')))
+  faq = flask.Markup(markdown.markdown(site.get('faq', '')))
 
   for tag in song['tags']:
     for i, s in enumerate(songs):
@@ -144,4 +134,4 @@ def song(slug):
   song['related'] = related
   song['src'] = '/static/mp3/' + slug + '.mp3'
   song['description_html'] = Markup(markdown.markdown(song['description']))
-  return render_template('site/song.html', song=song, title=song['name'])
+  return flask.render_template('site/song.html', song=song, title=song['name'])
