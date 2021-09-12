@@ -16,8 +16,8 @@
   <footer class="{{'single' if title else ''}}">
     {{footer}}
   </footer>
-  <script src="static/js/dist/jquery-3.3.1.min.js"></script>
-  <script src="static/js/dist/fontawesome-all.min.js"></script>
-  <script src="static/js/main.js"></script>
+  <script src="{{ url_for('.static', filename='js/dist/jquery-3.3.1.min.js') }}"></script>
+  <script src="{{ url_for('.static', filename='js/dist/fontawesome-all.min.js') }}"></script>
+  <script src="{{ url_for('.static', filename='js/main.js') }}"></script>
 </body>
 </html>

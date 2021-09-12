@@ -31,7 +31,7 @@ def _annotate(song, i):
   if 'src' in song:
     return
   if ENV == 'development':
-    song['src'] = 'file/%s.mp3' % (song['slug'])
+    song['src'] = flask.url_for('.file_', filename='%s.mp3' % song['slug'])
   else:
     song['src'] = '/static/mp3/' + song['slug'] + '.mp3'
   song['dt'] = datetime.fromtimestamp(song['date_created'])
@@ -132,6 +132,5 @@ def song(slug):
         if s['slug'] != song['slug']:
           related[tag].append(s)
   song['related'] = related
-  song['src'] = '/static/mp3/' + slug + '.mp3'
   song['description_html'] = flask.Markup(markdown.markdown(song['description']))
   return flask.render_template('site/song.html', song=song, title=song['name'])
