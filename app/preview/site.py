@@ -54,10 +54,10 @@ def index():
     if not user_id:
       return ('Not Authorized', 403)
 
-  if g.site_id is None:
+  if flask.g.site_id is None:
     return ('Not Found', 404)
 
-  site = mongo.get_rainfalldb().sites.find_one({'site_id': g.site_id})
+  site = mongo.get_rainfalldb().sites.find_one({'site_id': flask.g.site_id})
   if site is None:
     return ('Not Found', 404)
   elif ENV == 'development' and site['user_id'] != user_id:
@@ -106,10 +106,10 @@ def song(slug):
       'rainfall.dev' not in flask.request.headers.get("Referer")):
     return ('Not Authorized', 403)
 
-  if g.site_id is None:
+  if flask.g.site_id is None:
     return ('Not Found', 404)
 
-  site = mongo.get_rainfalldb().sites.find_one({'site_id': g.site_id})
+  site = mongo.get_rainfalldb().sites.find_one({'site_id': flask.g.site_id})
   if site is None:
     return ('Not Found', 404)
 
@@ -133,5 +133,5 @@ def song(slug):
           related[tag].append(s)
   song['related'] = related
   song['src'] = '/static/mp3/' + slug + '.mp3'
-  song['description_html'] = Markup(markdown.markdown(song['description']))
+  song['description_html'] = flask.Markup(markdown.markdown(song['description']))
   return flask.render_template('site/song.html', song=song, title=song['name'])
